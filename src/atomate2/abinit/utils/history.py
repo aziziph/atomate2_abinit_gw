@@ -25,7 +25,7 @@ class JobHistory(collections.deque, MSONable):
     track of the full history of the job.
     """
 
-    @pmg_serialize
+    # @pmg_serialize
     def as_dict(self):
         """Create dictionary representation of the history."""
         items = [i.as_dict() if hasattr(i, "as_dict") else i for i in self]
@@ -204,12 +204,14 @@ class JobEvent(MSONable):
         self.event_type = event_type
         self.details = details
 
-    @pmg_serialize
+    # @pmg_serialize
     def as_dict(self):
         """Create dictionary representation of the job event."""
         d = dict(event_type=self.event_type)
         if self.details:
             d["details"] = jsanitize(self.details, strict=True)
+        d["@module"] = self.__class__.__module__
+        d["@class"] = self.__class__.__name__
 
         return d
 

@@ -7,7 +7,7 @@ from abipy.flowtk import events
 from abipy.flowtk.utils import Directory
 from monty.json import MSONable
 from monty.serialization import MontyDecoder
-from pymatgen.util.serialization import pmg_serialize
+# from pymatgen.util.serialization import pmg_serialize
 
 TMPDIR_NAME = "tmpdata"
 OUTDIR_NAME = "outdata"
@@ -123,7 +123,7 @@ class AbinitRuntimeError(AbiAtomateError):
             self.warnings = warnings
         self.msg = msg
 
-    @pmg_serialize
+    # @pmg_serialize
     def to_dict(self):
         """Create dictionary representation of the error."""
         d = {"num_errors": self.num_errors, "num_warnings": self.num_warnings}
@@ -141,7 +141,8 @@ class AbinitRuntimeError(AbiAtomateError):
             d["error_message"] = self.msg
 
         d["error_code"] = self.ERROR_CODE
-
+        d["@module"] = self.__class__.__module__
+        d["@class"] = self.__class__.__name__
         return d
 
     def as_dict(self):
@@ -220,13 +221,15 @@ class UnconvergedError(AbinitRuntimeError):
         self.restart_info = restart_info
         self.history = history
 
-    @pmg_serialize
+    # @pmg_serialize
     def to_dict(self):
         """Create dictionary representation of the error."""
         d = super().to_dict()
         d["abinit_input"] = self.abinit_input.as_dict() if self.abinit_input else None
         d["restart_info"] = self.restart_info.as_dict() if self.restart_info else None
         d["history"] = self.history.as_dict() if self.history else None
+        d["@module"] = self.__class__.__module__
+        d["@class"] = self.__class__.__name__
         return d
 
     @classmethod
@@ -293,14 +296,17 @@ class RestartInfo(MSONable):
         # self.reset = reset
         self.num_restarts = num_restarts
 
-    @pmg_serialize
+    # @pmg_serialize
     def as_dict(self):
         """Create dictionary representation of the error."""
-        return dict(
+        d= dict(
             previous_dir=self.previous_dir,
             # reset=self.reset,
             num_restarts=self.num_restarts,
         )
+        d["@module"] = self.__class__.__module__
+        d["@class"] = self.__class__.__name__
+        return d
 
     @classmethod
     def from_dict(cls, d):
